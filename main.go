@@ -28,10 +28,12 @@ func main() {
 	http.HandleFunc("/index", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("test")
 		temp.ExecuteTemplate(w, "index", nil)
+		http.Redirect(w, r, "/choix", http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/choix", func(w http.ResponseWriter, r *http.Request) {
 		temp.ExecuteTemplate(w, "choix", nil)
+		http.Redirect(w, r, "/game", http.StatusSeeOther)
 	})
 
 	rootDoc, _ := os.Getwd()
