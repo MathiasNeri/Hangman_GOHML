@@ -1,33 +1,37 @@
-
-{{ define "index"}}
 <!DOCTYPE html>
-<html>
-    <head>
-        <title> Jeux Hangman </title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="../static/css/style.css">
-    </head>
+<html lang="fr">
+<head>
+    <!--French Display version-->
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Principal | Pendu</title>
+</head>
 <body>
-    <div id="main">
-        <div id="titre">
-            <h1 class="text">Jeux Hangman</h1>
+    <div class = "background1">
+        <h1 class = "bienvenue">
+            Bienvenue sur le jeu du pendu !<br>
+            Veuillez remplir les champs ci-dessous pour jouer 
+        </h1> <br>
+        <div class = "menu">
+            <form class = "index" method="POST" action = "/game">
+                <div class = "titre">
+                    <label>Entrez votre pseudo:</label> <br>
+                    <input class = "pseudo" type="text" name="Username" id="Username" required> <br>
+                </div>
+                <div class = "choix">
+                    <label>Choisissez la difficultée:</label>
+                    <input class = "rond" type="radio" id="easy" name="Difficulty" value="Facile"> 
+                    <label>Facile</label>
+                    <input class = "rond" type="radio" id="normal" name="Difficulty" value="Moyenne" checked>
+                    <label>Moyen</label>
+                    <input class = "rond" type="radio" id="hard" name="Difficulty" value="Difficile">
+                    <label>Difficile</label> 
+                </div>
+                <input type="submit" class = "start" value="Commencer">
+            </form>
         </div>
-        <div id="regle">
-        <p class="text">Le but du jeu est simple : 
-            deviner toute les lettres qui doivent composer un mot,
-            éventuellement avec un nombre limité de tentatives et
-            des thèmes fixés à l'avance. A chaque fois que le joueur devine une lettre,
-            celle-ci est affichée. Dans le cas contraire,
-            le dessin d'un pendu se met à apparaître…
-        </p>
-        </div>
-        <form action="/choix" method="post">
-            <div class="wrapper">
-                <button class="bouton" type="button">Continuer</button>
-            </div>
-        </form>
+    </div>
 </body>
-
-
 </html>
-{{ end }}

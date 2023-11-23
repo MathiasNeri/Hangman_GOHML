@@ -1,111 +1,114 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"html/template"
-	"math/rand"
 	"net/http"
-	"os"
-	"time"
+	hangman "serv-hangman/packages"
+	"strconv"
+	"strings"
+	"unicode"
 )
 
-var (
-	scoreboard int
-	nberror    int
-	difficulty string
-	words      []string
-	guesses    []string
-)
+type User struct {
+	Username    string
+	Difficulty  string
+	Word        string
+	ToFind      string
+	Win         int
+	Lose        int
+	Attempts    int
+	LetterTry   []string
+	LetterKnown []string
+	Display     string
+	Img         string
+	Winrate     float64
+	GameEnd     string
+}
+
+var h hangman.HangManData
+
+var details = User{
+	Username:   "",
+	Difficulty: "",
+	Attempts:   11,
+	GameEnd:    "none",
+}
 
 func main() {
-	temp, err := template.ParseGlob("./templates/*.html")
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
-	}
+	//démarage serveur
+	fmt.Println("Server is running on port 80 http://localhost")
+	//gestion css
+	fs := http.FileServer(http.Dir("css"))
+	http.Handle("/css/", http.StripPrefix("/css/", fs))
+	//gestion img
+	img := http.FileServer(http.Dir("img"))
+	http.Handle("/img/", http.StripPrefix("/img/", img))
+	//gestion html
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/game", gameHandler)
+	http.ListenAndServe(":80", nil)
+}
 
-	http.HandleFunc("/index", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("test")
-		temp.ExecuteTemplate(w, "index", nil)
-		http.Redirect(w, r, "/choix", http.StatusSeeOther)
-	})
-
-	http.HandleFunc("/choix", func(w http.ResponseWriter, r *http.Request) {
-		temp.ExecuteTemplate(w, "choix", nil)
-		http.Redirect(w, r, "/game", http.StatusSeeOther)
-	})
-
-	rootDoc, _ := os.Getwd()
-	fileserver := http.FileServer(http.Dir(rootDoc + "/asset"))
-	http.Handle("/static/", http.StripPrefix("/static/", fileserver))
-
-	http.HandleFunc("/sauvegarde", func(w http.ResponseWriter, r *http.Request) {
-		difficulty = r.FormValue("difficulty")
-	})
-
-	http.HandleFunc("/game", func(w http.ResponseWriter, r *http.Request) {
-		temp.ExecuteTemplate(w, "game", difficulty)
-	})
-
-	http.HandleFunc("/result", func(w http.ResponseWriter, r *http.Request) {
-		temp.ExecuteTemplate(w, "result", r)
-	})
-
-	http.HandleFunc("/getword", func(w http.ResponseWriter, r *http.Request) {
-		word, err := GetWord(difficulty + ".txt")
-		if err != nil {
-			http.Error(w, "Failed to get word", http.StatusInternalServerError)
-			return
+func IsLetter(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLetter(r) {
+			return false
 		}
-		w.Write([]byte(word))
-	})
-
-	// Your existing server setup...
-	http.ListenAndServe(":8080", nil)
+	}
+	return true
 }
 
-func GetWord(filename string) (string, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return "", err
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl1 := template.Must(template.ParseFiles("templates/index.html"))
+	if r.Method != http.MethodPost {
+		tmpl1.Execute(w, nil)
+		return
 	}
-	defer file.Close()
-
-	var words []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		words = append(words, scanner.Text())
-	}
-
-	if len(words) == 0 {
-		return "", fmt.Errorf("no words available")
-	}
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randomIndex := r.Intn(len(words))
-
-	return words[randomIndex], nil
+	details.Username = r.FormValue("Username")
+	details.Difficulty = r.FormValue("Difficulty")
+	tmpl1.Execute(w, details)
 }
 
-func Display() {
-	// Your display logic...
-}
-
-func Verifier(guess string) {
-	if len(guess) == 1 { // The player guessed a letter
-		// Check if the guessed letter is correct
-		guessed := false
-		for _, letter := range words {
-			if letter == guess {
-				guessed = true
-				break
-			}
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	details.Username = r.FormValue("Username")
+	details.Difficulty = r.FormValue("Difficulty")
+	if details.Attempts == 11 || details.Attempts <= 0 || details.Word == details.ToFind {
+		h = hangman.HangManData{}
+		details.GameEnd = "none"
+		if details.Difficulty == "Facile" {
+			h.Init("words.txt")
+		} else if details.Difficulty == "Moyenne" {
+			h.Init("words2.txt")
+		} else if details.Difficulty == "Difficile" {
+			h.Init("words3.txt")
 		}
-		if !guessed {
-			nberror++
+	}
+	if IsLetter(r.FormValue("LetterTry")) {
+		h.Game(strings.ToLower(r.FormValue("LetterTry")))
+		details.Word = h.Word
+		details.ToFind = h.ToFind
+		details.Attempts = h.Attempts
+		details.LetterTry = h.TriedLetters
+		details.LetterKnown = h.KnownLetters
+		details.Display = h.Message
+		if h.Word == h.ToFind {
+			details.Win++
+			h.ToFind = h.Word
+			details.GameEnd = "visible"
+		} else if h.Attempts <= 0 {
+			h.Attempts = 0
+			details.Lose++
+			details.GameEnd = "visible"
 		} else {
-			guesses = append(guesses, guess)
+			details.Display = "Vous devez entrer une lettre"
 		}
 	}
+	details.Img = "/img/" + strconv.Itoa(h.Attempts) + ".png"
+	if details.Win != 0 || details.Lose != 0 {
+		details.Winrate = float64(details.Win) / float64(details.Win+details.Lose) * 100
+	}
+	//gestion html
+	tmpl1 := template.Must(template.ParseFiles("templates/game.html"))
+	tmpl1.Execute(w, details)
 }

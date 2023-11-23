@@ -1,3 +1,3 @@
-module main
+module serv-hangman
 
-go 1.21.1
+go 1.19

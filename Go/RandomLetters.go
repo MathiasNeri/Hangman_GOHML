@@ -1,4 +1,4 @@
-package fonction
+package main
 
 import (
 	"crypto/rand"
