@@ -1,0 +1,82 @@
+body {
+    background-image: url("../image/lettre.jpg");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size:cover;
+    background-color: #202020;
+    top: 10px;
+}
+
+#main {
+   background-image: linear-gradient(to bottom right, #ff7701, #b6a2a2);    border-width: 5px;
+    height: 500px;
+    width: 550px;
+    flex-direction: column;
+    border-radius: 20px;
+    border-width:5px;
+    border-color:black;
+    display: flex;
+}
+
+#titre {
+  font-family:Bradley Hand, cursive;
+  display:flex;
+  top:10%;
+  flex-direction:column;
+  align-items:center;
+  
+}
+
+#regle{
+  align-items:center;
+  display:flex;
+  bottom:100%;
+}
+
+.wrapper{
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  a{
+    display: block;
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 18px;
+    font-family: sans-serif;
+    text-decoration: none;
+    color: #333;
+    border: 2px solid #333;
+    letter-spacing: 2px;
+    text-align: center;
+    position: relative;
+    transition: all .35s;
+  }
+  
+  a span{
+    position: relative;
+    z-index: 2;
+  }
+  
+  a:after{
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #dd4f11;
+    transition: all .35s;
+  }
+  
+  a:hover{
+    color: #fff;
+  }
+  
+  a:hover:after{
+    width: 100%;
+  }
