@@ -2,8 +2,6 @@
 
 body, html {
   height: 100%;
-  background-image: url(../img/lettre.jpg);
-  background-size:cover;
 }
 
 *{
@@ -38,7 +36,6 @@ body, html {
 }
 
 .menu {
-  
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -50,10 +47,9 @@ body, html {
 
 
 .index {
-  background-color: #000000bf;
+  background-color: #4e5652;
   border: 2px solid black;
   border-radius: 20px;
-  box-shadow: 4px 1px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,6 +57,7 @@ body, html {
   padding: 20px;
   width: fit-content;
   height: fit-content;
+  
 }
 
 .choix {
@@ -73,7 +70,6 @@ body, html {
 .start {
   border-radius: 10px;
   font-size: 30px;
-  background-color:white;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   padding: 5px;
   margin-top: 10px;
@@ -88,7 +84,12 @@ body, html {
 
 input[type="radio"] { -ms-transform: scale(1.5); /* IE 9 */ -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */ transform: scale(1.5); } 
 
-
+.background1 {
+  height: 100%;
+  background: linear-gradient(78deg,#50ca7f,#b97006,#12fd4b,#e4b421);
+  background-size: 240% 240%;
+  animation: gradient-animation 30s ease infinite;
+}
 
 @keyframes gradient-animation {
   0% {
