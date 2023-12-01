@@ -82,6 +82,8 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 			h.Init("words2.txt")
 		} else if details.Difficulty == "Difficile" {
 			h.Init("words3.txt")
+		} else if details.Difficulty == "horreur" {
+			h.Init("horreur.txt")
 		}
 	}
 	if IsLetter(r.FormValue("LetterTry")) {
