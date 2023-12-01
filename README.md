@@ -1,0 +1,3 @@
+# Hangman_GOHML Par Mathias et Eliott
+
+Le but de ce projet était de créer une version web du programme de jeu hangmann précédamment fait en golang, en incluant une gestions de routes, de serveur etc...
